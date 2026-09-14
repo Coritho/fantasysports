@@ -1,89 +1,1018 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.19.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.19.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.19.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  <title>Fantasy Sports - Player Database</title>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f1117;
+      color: #ffffff;
+    }
+
+    header {
+      background: #171a23;
+      border-bottom: 1px solid #292d38;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: #6ea8fe;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      background: transparent;
+      border: 1px solid #363b48;
+      color: #cbd0dc;
+      padding: 9px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    nav button:hover {
+      background: #252a35;
+      color: white;
+    }
+
+    nav button.active {
+      background: #6ea8fe;
+      border-color: #6ea8fe;
+      color: #08111f;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    .page-title {
+      margin-bottom: 25px;
+    }
+
+    .page-title h1 {
+      margin: 0 0 8px;
+      font-size: 32px;
+    }
+
+    .page-title p {
+      margin: 0;
+      color: #8f96a5;
+    }
+
+    .controls {
+      background: #171a23;
+      border: 1px solid #292d38;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: minmax(200px, 1fr) 160px 160px;
+      gap: 12px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: #0f1117;
+      border: 1px solid #363b48;
+      color: white;
+      padding: 12px;
+      border-radius: 7px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #6ea8fe;
+    }
+
+    .status {
+      margin-bottom: 15px;
+      color: #8f96a5;
+      font-size: 14px;
+    }
+
+    .table-container {
+      background: #171a23;
+      border: 1px solid #292d38;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #20242e;
+    }
+
+    th {
+      text-align: left;
+      color: #9ea5b5;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 14px;
+    }
+
+    td {
+      padding: 14px;
+      border-top: 1px solid #292d38;
+    }
+
+    tr.player-row {
+      cursor: pointer;
+    }
+
+    tr.player-row:hover {
+      background: #20242e;
+    }
+
+    .player-name {
+      font-weight: bold;
+    }
+
+    .position {
+      display: inline-block;
+      min-width: 38px;
+      text-align: center;
+      padding: 4px 7px;
+      border-radius: 5px;
+      background: #292f3c;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .muted {
+      color: #8f96a5;
+    }
+
+    .loading {
+      padding: 50px;
+      text-align: center;
+      color: #8f96a5;
+    }
+
+    .empty {
+      padding: 50px;
+      text-align: center;
+      color: #8f96a5;
+    }
+
+    .error {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #6b3030;
+      background: #291818;
+      color: #ffb4b4;
+      border-radius: 8px;
+    }
+
+    .player-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .player-panel.open {
+      display: flex;
+    }
+
+    .player-card {
+      width: min(700px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #171a23;
+      border: 1px solid #363b48;
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .player-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .player-card h2 {
+      margin: 0 0 5px;
+    }
+
+    .close-button {
+      background: #292d38;
+      border: none;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: #20242e;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .stat-label {
+      color: #8f96a5;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .details {
+      margin-top: 20px;
+      border-top: 1px solid #292d38;
+      padding-top: 15px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #292d38;
+    }
+
+    .detail-key {
+      color: #8f96a5;
+    }
+
+    @media (max-width: 800px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
       }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 750px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    Fantasy<span>Sports</span>
+  </div>
+
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button class="active" onclick="showPage('players')">Players</button>
+    <button onclick="showPage('teams')">Teams</button>
+    <button onclick="showPage('fantasy')">My Fantasy Team</button>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-title">
+    <h1>NFL Player Database</h1>
+    <p>Search NFL players and view their latest available statistics.</p>
+  </section>
+
+  <section class="controls">
+
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search player name..."
+      autocomplete="off"
+    >
+
+    <select id="positionFilter">
+      <option value="">All Positions</option>
+      <option value="QB">QB</option>
+      <option value="RB">RB</option>
+      <option value="WR">WR</option>
+      <option value="TE">TE</option>
+      <option value="K">K</option>
+      <option value="DEF">DEF</option>
+    </select>
+
+    <select id="teamFilter">
+      <option value="">All Teams</option>
+    </select>
+
+  </section>
+
+  <div id="status" class="status">
+    Connecting to player database...
+  </div>
+
+  <div id="error"></div>
+
+  <div class="table-container">
+
+    <div id="loading" class="loading">
+      Loading players...
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+    <div id="empty" class="empty" style="display: none;">
+      No players found.
+    </div>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
+    <table id="playersTable" style="display: none;">
+
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Position</th>
+          <th>Team</th>
+          <th>Games</th>
+          <th>Fantasy Points</th>
+          <th>Season</th>
+        </tr>
+      </thead>
+
+      <tbody id="playersBody"></tbody>
+
+    </table>
+
+  </div>
+
+</main>
+
+<div id="playerPanel" class="player-panel">
+
+  <div class="player-card">
+
+    <div class="player-card-header">
+
+      <div>
+        <h2 id="panelName">Player</h2>
+        <div id="panelSubtitle" class="muted"></div>
+      </div>
+
+      <button class="close-button" onclick="closePlayer()">
+        ×
+      </button>
+
+    </div>
+
+    <div id="panelStats" class="stats-grid"></div>
+
+    <div id="panelDetails" class="details"></div>
+
+  </div>
+
+</div>
+
+<script type="module">
+
+  import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+  import {
+    getFirestore,
+    collection,
+    getDocs
+  } from
+    "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  // ============================================================
+  // FIREBASE
+  // ============================================================
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAR6ftQOqwC1bJqSYzowmpc9sH8xCe5RMI",
+    authDomain: "fantasy-sports-e5948.firebaseapp.com",
+    projectId: "fantasy-sports-e5948",
+    storageBucket: "fantasy-sports-e5948.firebasestorage.app",
+    messagingSenderId: "832274734127",
+    appId: "1:832274734127:web:6732bd7b19ea7c084a7ada",
+    measurementId: "G-Y5S4YB9GNQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ============================================================
+  // STATE
+  // ============================================================
+
+  let allPlayers = [];
+
+  // ============================================================
+  // ELEMENTS
+  // ============================================================
+
+  const searchInput = document.getElementById("searchInput");
+  const positionFilter = document.getElementById("positionFilter");
+  const teamFilter = document.getElementById("teamFilter");
+
+  const statusElement = document.getElementById("status");
+  const errorElement = document.getElementById("error");
+
+  const loadingElement = document.getElementById("loading");
+  const emptyElement = document.getElementById("empty");
+
+  const playersTable = document.getElementById("playersTable");
+  const playersBody = document.getElementById("playersBody");
+
+  // ============================================================
+  // LOAD PLAYERS
+  // ============================================================
+
+  async function loadPlayers() {
+
+    try {
+
+      errorElement.innerHTML = "";
+
+      statusElement.textContent =
+        "Loading players from Firestore...";
+
+      const snapshot =
+        await getDocs(collection(db, "nflPlayers"));
+
+      allPlayers = [];
+
+      snapshot.forEach((doc) => {
+
+        allPlayers.push({
+          id: doc.id,
+          ...doc.data()
+        });
+
       });
-    </script>
-  </body>
+
+      console.log(
+        "Loaded players:",
+        allPlayers.length
+      );
+
+      buildTeamFilter();
+
+      renderPlayers();
+
+      loadingElement.style.display = "none";
+
+      statusElement.textContent =
+        `${allPlayers.length} player records loaded`;
+
+    } catch (error) {
+
+      console.error(error);
+
+      loadingElement.style.display = "none";
+
+      errorElement.innerHTML = `
+        <div class="error">
+          <strong>Could not load players.</strong>
+          <br><br>
+          ${escapeHtml(error.message)}
+          <br><br>
+          Make sure your Firestore rules allow the website
+          to read the <strong>nflPlayers</strong> collection.
+        </div>
+      `;
+
+      statusElement.textContent =
+        "Player database unavailable.";
+
+    }
+
+  }
+
+  // ============================================================
+  // TEAM FILTER
+  // ============================================================
+
+  function buildTeamFilter() {
+
+    const teams = new Set();
+
+    for (const player of allPlayers) {
+
+      const team =
+        player.team_abbr ||
+        player.team ||
+        player.recent_team ||
+        player.team_abbreviation;
+
+      if (team) {
+        teams.add(String(team));
+      }
+
+    }
+
+    const sortedTeams =
+      [...teams].sort();
+
+    teamFilter.innerHTML =
+      `<option value="">All Teams</option>`;
+
+    for (const team of sortedTeams) {
+
+      const option =
+        document.createElement("option");
+
+      option.value = team;
+      option.textContent = team;
+
+      teamFilter.appendChild(option);
+
+    }
+
+  }
+
+  // ============================================================
+  // FILTER PLAYERS
+  // ============================================================
+
+  function getFilteredPlayers() {
+
+    const search =
+      searchInput.value
+        .trim()
+        .toLowerCase();
+
+    const position =
+      positionFilter.value;
+
+    const team =
+      teamFilter.value;
+
+    return allPlayers.filter((player) => {
+
+      const name =
+        String(
+          player.display_name ||
+          player.player_name ||
+          player.full_name ||
+          player.name ||
+          ""
+        );
+
+      const playerPosition =
+        String(
+          player.position ||
+          ""
+        ).toUpperCase();
+
+      const playerTeam =
+        String(
+          player.team_abbr ||
+          player.team ||
+          player.recent_team ||
+          player.team_abbreviation ||
+          ""
+        );
+
+      const matchesSearch =
+        !search ||
+        name.toLowerCase().includes(search);
+
+      const matchesPosition =
+        !position ||
+        playerPosition === position;
+
+      const matchesTeam =
+        !team ||
+        playerTeam === team;
+
+      return (
+        matchesSearch &&
+        matchesPosition &&
+        matchesTeam
+      );
+
+    });
+
+  }
+
+  // ============================================================
+  // RENDER
+  // ============================================================
+
+  function renderPlayers() {
+
+    const players =
+      getFilteredPlayers();
+
+    playersBody.innerHTML = "";
+
+    if (players.length === 0) {
+
+      playersTable.style.display = "none";
+      emptyElement.style.display = "block";
+
+      statusElement.textContent =
+        "No players match your search.";
+
+      return;
+    }
+
+    emptyElement.style.display = "none";
+    playersTable.style.display = "table";
+
+    // Don't render thousands of records at once.
+    const visiblePlayers =
+      players.slice(0, 250);
+
+    for (const player of visiblePlayers) {
+
+      const row =
+        document.createElement("tr");
+
+      row.className = "player-row";
+
+      row.addEventListener(
+        "click",
+        () => openPlayer(player)
+      );
+
+      const name =
+        player.display_name ||
+        player.player_name ||
+        player.full_name ||
+        player.name ||
+        "Unknown Player";
+
+      const position =
+        player.position ||
+        "-";
+
+      const team =
+        player.team_abbr ||
+        player.team ||
+        player.recent_team ||
+        player.team_abbreviation ||
+        "-";
+
+      const games =
+        player.games_played ??
+        player.gp ??
+        player.games ??
+        "-";
+
+      const fantasyPoints =
+        player.fantasy_points ??
+        player.fantasy_points_ppr ??
+        player.fantasy_points_ppr ??
+        "-";
+
+      const season =
+        player.season ||
+        "-";
+
+      row.innerHTML = `
+        <td>
+          <div class="player-name">
+            ${escapeHtml(String(name))}
+          </div>
+          <div class="muted">
+            ${escapeHtml(String(player.id))}
+          </div>
+        </td>
+
+        <td>
+          <span class="position">
+            ${escapeHtml(String(position))}
+          </span>
+        </td>
+
+        <td>
+          ${escapeHtml(String(team))}
+        </td>
+
+        <td>
+          ${escapeHtml(formatNumber(games))}
+        </td>
+
+        <td>
+          ${escapeHtml(formatNumber(fantasyPoints))}
+        </td>
+
+        <td>
+          ${escapeHtml(String(season))}
+        </td>
+      `;
+
+      playersBody.appendChild(row);
+
+    }
+
+    statusElement.textContent =
+      players.length > 250
+        ? `Showing 250 of ${players.length} matching records`
+        : `${players.length} player records`;
+
+  }
+
+  // ============================================================
+  // PLAYER DETAILS
+  // ============================================================
+
+  function openPlayer(player) {
+
+    const name =
+      player.display_name ||
+      player.player_name ||
+      player.full_name ||
+      player.name ||
+      "Unknown Player";
+
+    const position =
+      player.position ||
+      "Unknown";
+
+    const team =
+      player.team_abbr ||
+      player.team ||
+      player.recent_team ||
+      player.team_abbreviation ||
+      "Unknown";
+
+    document.getElementById("panelName")
+      .textContent = name;
+
+    document.getElementById("panelSubtitle")
+      .textContent =
+        `${position} • ${team}`;
+
+    const statDefinitions = [
+
+      ["Fantasy Points",
+        player.fantasy_points],
+
+      ["PPR Points",
+        player.fantasy_points_ppr],
+
+      ["Passing Yards",
+        player.passing_yards],
+
+      ["Passing TDs",
+        player.passing_tds],
+
+      ["Rushing Yards",
+        player.rushing_yards],
+
+      ["Rushing TDs",
+        player.rushing_tds],
+
+      ["Receiving Yards",
+        player.receiving_yards],
+
+      ["Receiving TDs",
+        player.receiving_tds],
+
+      ["Receptions",
+        player.receptions],
+
+      ["Targets",
+        player.targets]
+
+    ];
+
+    const availableStats =
+      statDefinitions.filter(
+        ([, value]) =>
+          value !== undefined &&
+          value !== null
+      );
+
+    document.getElementById("panelStats")
+      .innerHTML =
+        availableStats
+          .map(
+            ([label, value]) => `
+              <div class="stat">
+                <div class="stat-label">
+                  ${escapeHtml(label)}
+                </div>
+                <div class="stat-value">
+                  ${escapeHtml(formatNumber(value))}
+                </div>
+              </div>
+            `
+          )
+          .join("");
+
+    const ignored =
+      new Set([
+        "display_name",
+        "player_name",
+        "full_name",
+        "name",
+        "position",
+        "team",
+        "team_abbr",
+        "recent_team",
+        "team_abbreviation"
+      ]);
+
+    const details =
+      Object.entries(player)
+        .filter(([key, value]) => {
+
+          return (
+            !ignored.has(key) &&
+            value !== null &&
+            value !== undefined &&
+            typeof value !== "object"
+          );
+
+        })
+        .slice(0, 40);
+
+    document.getElementById("panelDetails")
+      .innerHTML = details.length
+        ? details
+            .map(
+              ([key, value]) => `
+                <div class="detail-row">
+                  <span class="detail-key">
+                    ${escapeHtml(formatKey(key))}
+                  </span>
+
+                  <span>
+                    ${escapeHtml(formatNumber(value))}
+                  </span>
+                </div>
+              `
+            )
+            .join("")
+        : `<div class="muted">No additional information.</div>`;
+
+    document.getElementById("playerPanel")
+      .classList.add("open");
+
+  }
+
+  function closePlayer() {
+
+    document.getElementById("playerPanel")
+      .classList.remove("open");
+
+  }
+
+  window.closePlayer = closePlayer;
+
+  // ============================================================
+  // NAVIGATION PLACEHOLDER
+  // ============================================================
+
+  window.showPage = function(page) {
+
+    if (page === "players") {
+      return;
+    }
+
+    alert(
+      `${page} page will be built next.`
+    );
+
+  };
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+
+  function formatNumber(value) {
+
+    if (
+      typeof value === "number" &&
+      Number.isFinite(value)
+    ) {
+      return Number.isInteger(value)
+        ? value.toLocaleString()
+        : value.toLocaleString(
+            undefined,
+            {
+              maximumFractionDigits: 2
+            }
+          );
+    }
+
+    return String(value ?? "-");
+
+  }
+
+  function formatKey(key) {
+
+    return String(key)
+      .replaceAll("_", " ")
+      .replace(
+        /\b\w/g,
+        (character) =>
+          character.toUpperCase()
+      );
+
+  }
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+  // ============================================================
+  // EVENTS
+  // ============================================================
+
+  searchInput.addEventListener(
+    "input",
+    renderPlayers
+  );
+
+  positionFilter.addEventListener(
+    "change",
+    renderPlayers
+  );
+
+  teamFilter.addEventListener(
+    "change",
+    renderPlayers
+  );
+
+  document.getElementById("playerPanel")
+    .addEventListener(
+      "click",
+      (event) => {
+
+        if (
+          event.target.id ===
+          "playerPanel"
+        ) {
+          closePlayer();
+        }
+
+      }
+    );
+
+  // ============================================================
+  // START
+  // ============================================================
+
+  loadPlayers();
+
+</script>
+
+</body>
 </html>
