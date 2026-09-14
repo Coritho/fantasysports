@@ -1,12 +1,17 @@
 {
-  "name": "nfl-updater",
+  "name": "fantasy-sports-updater",
   "version": "1.0.0",
-  "description": "Automatically updates NFL data from nflverse",
+  "private": true,
+  "description": "Downloads NFL player statistics from nflverse and stores them in Firebase.",
   "main": "update-nfl.js",
   "scripts": {
     "update": "node update-nfl.js"
   },
+  "engines": {
+    "node": "24"
+  },
   "dependencies": {
-    "firebase-admin": "^13.6.0"
+    "firebase-admin": "^13.6.0",
+    "parquetjs-lite": "^0.8.7"
   }
 }
