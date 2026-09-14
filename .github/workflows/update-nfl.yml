@@ -1,35 +1,33 @@
-name: Update NFL Data
+name: Update NFL player data
 
 on:
   workflow_dispatch:
-
   schedule:
-    # Runs every day at 9:00 AM UTC.
-    - cron: "0 9 * * *"
+    - cron: "0 10 * * 2"
 
 jobs:
-  update-nfl:
-    name: Update NFL player data
-
+  update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: updater/package-lock.json
+          node-version: 20
 
       - name: Install updater dependencies
         working-directory: updater
         run: npm install
 
-      - name: Update NFL data
+      - name: Update NFL player data
         working-directory: updater
         env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: npm run update
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-service-account.json
+          GOOGLE_CLOUD_PROJECT: fantasy-sports-101
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$GOOGLE_APPLICATION_CREDENTIALS"
+          npm run update
+          rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
